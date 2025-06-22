@@ -1,0 +1,21 @@
+<h2>Flow Stats for DPID {{ result.dpid }}</h2>
+<table border="1">
+  <tr>
+    <th>Priority</th>
+    <th>Match</th>
+    <th>Actions</th>
+    <th>Packet Count</th>
+    <th>Byte Count</th>
+  </tr>
+  {% for flow in result.flow_stats %}
+  <tr>
+    <td>{{ flow.priority }}</td>
+    <td>{{ flow.match }}</td>
+    <td>
+      <ul>{% for a in flow.actions %}<li>{{ a }}</li>{% endfor %}</ul>
+    </td>
+    <td>{{ flow.packet_count }}</td>
+    <td>{{ flow.byte_count }}</td>
+  </tr>
+  {% endfor %}
+</table>

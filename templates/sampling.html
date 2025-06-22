@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sampling Results</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .warning {
+            background-color: #ffe6e6;
+        }
+        .normal {
+            background-color: #e6ffe6;
+        }
+        .collecting {
+            background-color: #e6f0ff;
+        }
+        .train {
+            background-color: #fff0e6;
+        }
+    </style>
+    <script>
+        function updateTable() {
+            fetch('/sampling_data')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#resultsTable tbody');
+                    tbody.innerHTML = '';
+                    data.results.forEach(result => {
+                        const row = document.createElement('tr');
+                        row.className = result.status;
+                        row.innerHTML = `
+                            <td>${result.time}</td>
+                            <td>${JSON.stringify(result.vector)}</td>
+                            <td>${result.status}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update table every second
+        setInterval(updateTable, 1000);
+        // Initial update
+        window.onload = updateTable;
+    </script>
+</head>
+<body>
+    <h1>Sampling Results</h1>
+    <table id="resultsTable">
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Feature Vector</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</body>
+</html>

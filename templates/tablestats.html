@@ -1,0 +1,17 @@
+<h2>Table Stats for DPID {{ result.dpid }}</h2>
+<table border="1">
+  <tr>
+    <th>Table ID</th>
+    <th>Active Count</th>
+    <th>Lookup Count</th>
+    <th>Matched Count</th>
+  </tr>
+  {% for t in result.table_stats %}
+  <tr>
+    <td>{{ t.table_id }}</td>
+    <td>{{ t.active_count }}</td>
+    <td>{{ t.lookup_count }}</td>
+    <td>{{ t.matched_count }}</td>
+  </tr>
+  {% endfor %}
+</table>

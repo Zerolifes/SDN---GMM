@@ -1,0 +1,25 @@
+<h2>Port Stats for DPID {{ result.dpid }}</h2>
+<table border="1">
+  <tr>
+    <th>Port No</th>
+    <th>RX Packets</th>
+    <th>TX Packets</th>
+    <th>RX Bytes</th>
+    <th>TX Bytes</th>
+    <th>RX Errors</th>
+    <th>TX Errors</th>
+    <th>Collisions</th>
+  </tr>
+  {% for port in result.port_stats %}
+  <tr>
+    <td>{{ port.port_no }}</td>
+    <td>{{ port.rx_packets }}</td>
+    <td>{{ port.tx_packets }}</td>
+    <td>{{ port.rx_bytes }}</td>
+    <td>{{ port.tx_bytes }}</td>
+    <td>{{ port.rx_errors }}</td>
+    <td>{{ port.tx_errors }}</td>
+    <td>{{ port.collisions }}</td>
+  </tr>
+  {% endfor %}
+</table>

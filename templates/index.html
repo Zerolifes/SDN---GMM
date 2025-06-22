@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SDN Web Controller</title>
+</head>
+<body>
+    <h2>SDN Controller Interface</h2>
+
+    <h4>Connected Switches:</h4>
+    {% if connected_dpids %}
+        <ul>
+            {% for dpid in connected_dpids %}
+                <li>Switch DPID: {{ dpid }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No switch connected yet.</p>
+    {% endif %}
+
+    <form method="POST">
+        <label>DPID:</label>
+        <select name="dpid">
+            {% for dpid in connected_dpids %}
+                <option value="{{ dpid }}" {% if dpid == selected_dpid %}selected{% endif %}>{{ dpid }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button name="action" value="flowstats">Get Flow Stats</button>
+        <button name="action" value="portstats">Get Port Stats</button>
+        <button name="action" value="tablestats">Get Table Stats</button>
+    </form>
+
+    <br>
+    <!-- Start Sampling Button -->
+    <form method="POST">
+        <input type="hidden" name="action" value="start_sampling">
+        <button type="submit">Start Sampling</button>
+    </form>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>{% for msg in messages %}
+        <li>{{ msg }}</li>
+        {% endfor %}</ul>
+    {% endif %}
+    {% endwith %}
+
+    {% if result %}
+        <h3>Stats Result:</h3>
+        {% if result.flow_stats %}
+            <table border="1">
+                <tr><th>Priority</th><th>Match</th><th>Actions</th><th>Packets</th><th>Bytes</th></tr>
+                {% for f in result.flow_stats %}
+                    <tr>
+                        <td>{{ f.priority }}</td>
+                        <td>{{ f.match }}</td>
+                        <td>{{ f.actions }}</td>
+                        <td>{{ f.packet_count }}</td>
+                        <td>{{ f.byte_count }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% elif result.port_stats %}
+            <table border="1">
+                <tr><th>Port</th><th>RX Packets</th><th>TX Packets</th><th>RX Bytes</th><th>TX Bytes</th></tr>
+                {% for p in result.port_stats %}
+                    <tr>
+                        <td>{{ p.port_no }}</td>
+                        <td>{{ p.rx_packets }}</td>
+                        <td>{{ p.tx_packets }}</td>
+                        <td>{{ p.rx_bytes }}</td>
+                        <td>{{ p.tx_bytes }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% elif result.table_stats %}
+            <table border="1">
+                <tr><th>Table ID</th><th>Active</th><th>Lookup</th><th>Matched</th></tr>
+                {% for t in result.table_stats %}
+                    <tr>
+                        <td>{{ t.table_id }}</td>
+                        <td>{{ t.active_count }}</td>
+                        <td>{{ t.lookup_count }}</td>
+                        <td>{{ t.matched_count }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <pre>{{ result | tojson(indent=2) }}</pre>
+        {% endif %}
+    {% endif %}
+
+    <hr>
+    <h3>FlowMod</h3>
+    <form method="POST">
+        <input type="hidden" name="action" value="flowmod">
+        <label>DPID:</label>
+        <select name="dpid">
+            {% for dpid in connected_dpids %}
+                <option value="{{ dpid }}" {% if dpid == selected_dpid %}selected{% endif %}>{{ dpid }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Command:</label>
+        <select name="cmd">
+            <option value="add">Add</option>
+            <option value="modify">Modify</option>
+            <option value="delete">Delete</option>
+        </select><br>
+        <label>in_port:</label> <input name="in_port"><br>
+        <label>out_port:</label> <input name="out_port"><br>
+        <label>eth_type:</label> <input name="eth_type" placeholder="e.g. 0x800"><br>
+        <label>ip_proto:</label> <input name="ip_proto"><br>
+        <label>ipv4_src:</label> <input name="ipv4_src"><br>
+        <label>ipv4_dst:</label> <input name="ipv4_dst"><br>
+        <label>priority:</label> <input name="priority" value="100"><br>
+        <label>Strict:</label> <input type="checkbox" name="strict"><br>
+        <button type="submit">Submit FlowMod</button>
+    </form>
+
+    {% if flow_result %}
+        <h4>FlowMod Result:</h4>
+        <pre>{{ flow_result | tojson(indent=2) }}</pre>
+    {% endif %}
+</body>
+</html>
